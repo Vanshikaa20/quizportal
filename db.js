@@ -2,34 +2,25 @@
 
 const mysql = require('mysql');
 
-const dbConfig = {
-  host: 'localhost',
-  port: 3306,
-  user: 'root',
-  password: '123', // Ensure that the password is a string
-  database: 'quizportal',
-};
+const pool = mysql.createPool({
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: '123', // Replace with your actual password
+    database: 'quizportal',
+  });
 
-const connection = mysql.createConnection(dbConfig);
-
-connection.connect((err) => {
-  if (err) {
-    console.error('Database connection failed: ' + err.stack);
-    return;
-  }
-  console.log('Connected to the database');
-
-  // Perform any database operations here...
-
-  // Close the connection when done
-  connection.end((endErr) => {
-    if (endErr) {
-      console.error('Error closing database connection: ' + endErr.stack);
+// Use the pool for queries
+pool.getConnection((err, connection) => {
+    if (err) {
+      console.error('Database connection failed: ' + err.stack);
       return;
     }
-    console.log('Database connection closed');
-  });
+  
+    console.log('Connected to the database');
+
+    connection.release();
 });
 
 // Export the connection if needed
-module.exports = connection;
+module.exports = pool;
